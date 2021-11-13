@@ -48,6 +48,13 @@ public class CovidManager {
         System.out.println("countTotalIncidencesStmk = " + countTotalIncidencesStmk);
 
         System.out.println("totalIncidencesState = " + groupByState(recordedValues));
+
+        System.out.println("groupByDate(recordedValues) = " + groupByDate(recordedValues));
+
+        System.out.println("getAverageValueAfter(recordedValues, \"2021-04-27) = " + getAverageValueAfter(recordedValues, "2021-04-27"));
+
+        System.out.println("findDayStateWithHighestValues(recordedValues) = " + findDayStateWithHighestValues(recordedValues));
+        
     }
 
     public static HashMap<String, Integer> groupByState(ArrayList<Incidence> recordedValues) {
@@ -74,24 +81,67 @@ public class CovidManager {
         return totalIncidencesState;
     }
 
-    public static HashMap<String, Integer> groupByData(ArrayList<Incidence> recordedValues) {
+    public static HashMap<String, Integer> groupByDate(ArrayList<Incidence> recordedValues) {
         // Summe der Fälle je Tag
-        return null;
+        HashMap<String, Integer> result = new HashMap<>();
+
+        for (Incidence oneElement : recordedValues) {
+
+            if(result.containsKey(oneElement.getDate())){
+                result.put(oneElement.getDate(),
+                        result.get(oneElement.getDate()) + oneElement.getNumber());
+            }
+            else{
+                result.put(oneElement.getDate(), oneElement.getNumber());
+            }
+
+        }
+        return result;
     }
 
     public static int findHighestValue(ArrayList<Incidence> recordedValues) {
         // Es soll der höchste gemeldete Wert gefunden werden
-        return 0;
+        int maxValue = Integer.MIN_VALUE;
+
+        for (Incidence oneElement : recordedValues) {
+            
+            if (oneElement.getNumber() > maxValue){
+                maxValue = oneElement.getNumber();
+            }
+            
+        }
+        
+        return maxValue;
     }
 
     public static int getAverageValueAfter(ArrayList<Incidence> recordedValues, String date) {
         // Es soll der durchschnittliche Wert nach einem bestimmten Datum gefunden werden
         // date ist beispielsweise 2021-08-01
-        return 0;
+        int totalValue = 0;
+        int counter = 0;
+
+        for (Incidence oneElement : recordedValues) {
+            if(oneElement.getDate().compareTo(date) > 0){
+                totalValue += oneElement.getNumber();
+                counter++;
+            }
+        }
+
+        if (counter == 0)
+            return -1;
+        
+        return totalValue / counter;
     }
 
     public static Incidence findDayStateWithHighestValues(ArrayList<Incidence> recordedValues) {
         // Es soll die Meldung (state/date) mit dem höchsten Wert gefunden werden
+
+        int maxValue = findHighestValue(recordedValues);
+        for (Incidence oneElement : recordedValues) {
+            if(oneElement.getNumber() == maxValue){
+                return oneElement;
+            }
+        }
 
         return null;
     }
